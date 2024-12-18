@@ -36,7 +36,10 @@ const exec = (context) => check(context) && (
       prompt.patch(text);
       setPrompt(context.userId, prompt);
       updateHistory(context.id, (history) => history.write(config.BOT_NAME, text));
-      const actions = isFinishReasonStop ? [COMMAND_BOT_FORGET] : [COMMAND_BOT_CONTINUE];
+      const actions = isFinishReasonStop ? 
+      //[COMMAND_BOT_FORGET] : 
+      [] : // 拿掉忘記按鈕
+      [COMMAND_BOT_CONTINUE];
       context.pushText(text, actions);
     } catch (err) {
       context.pushError(err);

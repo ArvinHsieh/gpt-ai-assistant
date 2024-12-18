@@ -19,6 +19,7 @@ const config = Object.freeze({
   APP_MAX_PROMPT_MESSAGES: Number(env.APP_MAX_PROMPT_MESSAGES) || 4,
   APP_MAX_PROMPT_TOKENS: Number(env.APP_MAX_PROMPT_TOKENS) || 256,
   APP_INIT_PROMPT: env.APP_INIT_PROMPT || '',
+  APP_ONLY_TALK: env.APP_ONLY_TALK === 'true' || false,
   HUMAN_NAME: env.HUMAN_NAME || '',
   HUMAN_INIT_PROMPT: env.HUMAN_INIT_PROMPT || '',
   BOT_NAME: env.BOT_NAME || 'AI',
@@ -51,6 +52,7 @@ const config = Object.freeze({
   SERPAPI_TIMEOUT: env.SERPAPI_TIMEOUT || env.APP_API_TIMEOUT,
   SERPAPI_API_KEY: env.SERPAPI_API_KEY || null,
   SERPAPI_LOCATION: env.SERPAPI_LOCATION || 'tw',
+  IGNORE_WORD: env.IGNORE_WORD || null,
 });
 
 export default config;

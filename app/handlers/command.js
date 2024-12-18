@@ -7,7 +7,7 @@ import {
 } from '../commands/index.js';
 import Context from '../context.js';
 import { updateHistory } from '../history/index.js';
-
+import config from '../../config/index.js';
 /**
  * @param {Context} context
  * @returns {boolean}
@@ -20,6 +20,7 @@ const check = (context) => context.hasCommand(COMMAND_SYS_COMMAND);
  */
 const exec = (context) => check(context) && (
   async () => {
+    if (config.APP_ONLY_TALK) return context;
     updateHistory(context.id, (history) => history.erase());
     try {
       const buttons = [...INFO_COMMANDS];

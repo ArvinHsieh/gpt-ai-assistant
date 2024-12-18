@@ -17,6 +17,7 @@ const check = (context) => context.hasCommand(COMMAND_SYS_DEPLOY);
  */
 const exec = (context) => check(context) && (
   async () => {
+    if (config.APP_ONLY_TALK) return context;
     updateHistory(context.id, (history) => history.erase());
     if (!config.VERCEL_DEPLOY_HOOK_URL) context.pushText(t('__ERROR_MISSING_ENV')('VERCEL_DEPLOY_HOOK_URL'));
     try {

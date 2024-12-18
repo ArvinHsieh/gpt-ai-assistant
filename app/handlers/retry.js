@@ -18,6 +18,7 @@ const check = (context) => context.hasCommand(COMMAND_BOT_RETRY);
  */
 const exec = (context) => check(context) && (
   async () => {
+    if (config.APP_ONLY_TALK) return context;
     updateHistory(context.id, (history) => history.erase());
     const prompt = getPrompt(context.userId);
     prompt.erase().write(ROLE_AI);

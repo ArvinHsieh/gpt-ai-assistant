@@ -6,7 +6,7 @@ import { ALL_COMMANDS, COMMAND_BOT_CONTINUE, ENQUIRE_COMMANDS } from '../command
 import Context from '../context.js';
 import { getHistory, updateHistory } from '../history/index.js';
 import { getPrompt, setPrompt, Prompt } from '../prompt/index.js';
-
+import config from '../../config/index.js';
 /**
  * @param {Context} context
  * @returns {boolean}
@@ -23,6 +23,7 @@ const check = (context) => (
  */
 const exec = (context) => check(context) && (
   async () => {
+    if (config.APP_ONLY_TALK) return context;
     updateHistory(context.id, (history) => history.erase());
     const command = getCommand(context.trimmedText);
     const history = getHistory(context.id);

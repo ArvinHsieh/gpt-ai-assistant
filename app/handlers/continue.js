@@ -3,7 +3,7 @@ import { ALL_COMMANDS, COMMAND_BOT_CONTINUE } from '../commands/index.js';
 import Context from '../context.js';
 import { updateHistory } from '../history/index.js';
 import { getPrompt, setPrompt } from '../prompt/index.js';
-
+import config from '../../config/index.js';
 /**
  * @param {Context} context
  * @returns {boolean}

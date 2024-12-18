@@ -19,6 +19,7 @@ const check = (context) => context.hasCommand(COMMAND_BOT_SEARCH);
  */
 const exec = (context) => check(context) && (
   async () => {
+    if (config.APP_ONLY_TALK) return context;
     let trimmedText = context.trimmedText.replace(COMMAND_BOT_SEARCH.text, '');
     const prompt = getPrompt(context.userId);
     if (!config.SERPAPI_API_KEY) context.pushText(t('__ERROR_MISSING_ENV')('SERPAPI_API_KEY'));

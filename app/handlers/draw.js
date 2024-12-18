@@ -19,6 +19,7 @@ const check = (context) => context.hasCommand(COMMAND_BOT_DRAW);
  */
 const exec = (context) => check(context) && (
   async () => {
+    if (config.APP_ONLY_TALK) return context;
     const prompt = getPrompt(context.userId);
     prompt.write(ROLE_HUMAN, `${context.trimmedText}`).write(ROLE_AI);
     try {

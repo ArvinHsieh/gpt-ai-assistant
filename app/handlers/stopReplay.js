@@ -3,18 +3,26 @@ import { getUsers, addUser, getStopBotUserId, addStopUser, removeStopUser } from
 
 /**
  * @param {Context} context
+ * @returns {boolean}
+ */
+const check = (context) => {
+  const stopUsers = getStopBotUserId();
+  if (stopUsers.length > 0) {
+      if (stopUsers.indexOf(context.userId) != -1) {
+           return true;
+      }
+      return false;
+  }
+}
+
+/**
+ * @param {Context} context
  * @returns {Promise<Context>}
  */
-const exec = (context) => (
+const exec = (context) => check(context) && (
   async () => {
     try {
-        
-        const stopUsers = getStopBotUserId();
-        if (stopUsers.length > 0) {
-            if (stopUsers.indexOf(context.userId) != -1) {
-                context.pushText("");    
-            }
-        }
+      context.pushText(""); 
     } catch (err) {
       context.pushError(err);
     }

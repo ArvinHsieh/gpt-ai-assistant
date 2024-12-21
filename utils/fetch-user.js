@@ -4,12 +4,21 @@ import { t } from '../locales/index.js';
 import { fetchProfile } from '../services/line.js';
 
 class User {
-  displayName;
+  displayName; 
+  userId; 
+  pictureUrl; 
+  statusMessage;
 
   constructor({
     displayName,
+    userId,
+    pictureUrl,
+    statusMessage
   }) {
     this.displayName = displayName;
+    this.userId = userId;
+    this.pictureUrl = pictureUrl;
+    this.statusMessage = statusMessage;
   }
 }
 

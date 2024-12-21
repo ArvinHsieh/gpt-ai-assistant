@@ -19,8 +19,8 @@ import { updateHistory } from './history/index.js';
 import {
   ImageMessage, Message, TemplateMessage, TextMessage,
 } from './messages/index.js';
-import { Bot, Event, Source } from './models/index.js';
-import { getSources, setSources } from './repository/index.js';
+import { Bot, Event, Source, Monitor } from './models/index.js';
+import { getSources, setSources, addUser, getStopBotUserId, addStopUser, removeStopUser } from './repository/index.js';
 
 class Context {
   /**
@@ -164,13 +164,31 @@ class Context {
       });
     }
     if (!sources[this.userId]) {
-      const { displayName } = await fetchUser(this.userId);
+      const { displayName, userId, pictureUrl, statusMessage } = await fetchUser(this.userId);
       newSources[this.userId] = new Source({
         type: SOURCE_TYPE_USER,
+        pictureUrl: pictureUrl,
+        userId: userId,
         name: displayName,
+        statusMessage: statusMessage,
         bot: new Bot({
           isActivated: !config.BOT_DEACTIVATED,
         }),
+      });
+      addUser({
+        pictureUrl: pictureUrl,
+        displayName: displayName,
+        userId: userId,
+        statusMessage: statusMessage,
+        lastMessageTime: new Date()
+      });
+    } else {
+      addUser({
+        pictureUrl: sources[this.userId].pictureUrl,
+        displayName: sources[this.userId].name,
+        userId: sources[this.userId].userId,
+        statusMessage: sources[this.userId].statusMessage,
+        lastMessageTime: new Date()
       });
     }
     Object.assign(sources, newSources);

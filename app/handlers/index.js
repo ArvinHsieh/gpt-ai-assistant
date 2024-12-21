@@ -13,6 +13,7 @@ import searchHandler from './search.js';
 import talkHandler from './talk.js';
 import versionHandler from './version.js';
 import ignoreWordHandler from './ignoreWord.js';
+import stopReplay from './stopReplay.js';
 
 export {
   activateHandler,
@@ -30,4 +31,5 @@ export {
   talkHandler,
   versionHandler,
   ignoreWordHandler,
+  stopReplay,
 };

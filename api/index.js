@@ -1,16 +1,16 @@
 import express from 'express';
+import path from 'path';
 import { handleEvents, printPrompts } from '../app/index.js';
 import config from '../config/index.js';
 import { validateLineSignature } from '../middleware/index.js';
 import storage from '../storage/index.js';
 import { fetchVersion, getVersion } from '../utils/index.js';
 import { getUsers, addUser, getStopBotUserId, addStopUser, removeStopUser } from '../app/repository/monitor.js';
-//import { dirname } from 'path';
 
 const app = express();
 
 app.set('view engine', 'ejs');
-app.set('views', './views'); // 指定模板檔案位置
+app.set('views', path.join(path.resolve('./'), "./views")); // 指定模板檔案位置
 
 app.use(express.json({
   verify: (req, res, buf) => {

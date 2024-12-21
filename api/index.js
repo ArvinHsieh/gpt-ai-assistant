@@ -5,8 +5,12 @@ import { validateLineSignature } from '../middleware/index.js';
 import storage from '../storage/index.js';
 import { fetchVersion, getVersion } from '../utils/index.js';
 import { getUsers, addUser, getStopBotUserId, addStopUser, removeStopUser } from '../app/repository/monitor.js';
+//import { dirname } from 'path';
 
 const app = express();
+
+app.set('view engine', 'ejs');
+app.set('views', './views'); // 指定模板檔案位置
 
 app.use(express.json({
   verify: (req, res, buf) => {
@@ -25,8 +29,13 @@ app.get('/', async (req, res) => {
 });
 
 app.get('/monitor', (req, res) => {
-  res.sendfile('./api/monitor.html');
+  // const serverVariable = { name: 'John Doe', age: 30 };
+  res.render('monitor'); // { data: serverVariable }
 });
+
+//app.get('/monitor', (req, res) => {
+//  res.sendfile('./api/monitor.html');
+//});
 
 app.post(config.APP_WEBHOOK_PATH, validateLineSignature, async (req, res) => {
   try {
@@ -52,7 +61,7 @@ app.get('/users', async (req, res) => {
   if (config.APP_DEBUG) printPrompts();
 });
 
-app.get('/addUser', async (req, res) => {
+app.post('/addUser', async (req, res) => {
   try {
     addUser({
       displayName: "TEST",

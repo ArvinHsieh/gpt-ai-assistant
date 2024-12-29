@@ -21,6 +21,7 @@
             gap: 20px;
             width: 95%;
             margin-top: 5%;
+            flex-wrap: wrap; /* 允許子項目換行 */
         }
 
         .table-container {
@@ -29,7 +30,11 @@
             border-radius: 8px;
             padding: 10px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            width: 100%;
+            flex: 1;
+            min-width: 300px; /* 最小寬度 */
+          overflow-x: auto; /* 添加橫向卷軸 */
+          
+            min-height: 400px;
         }
 
         table {
@@ -86,15 +91,45 @@
             margin-right: 10px;
             width: 200px;
         }
+
+        /* RWD 樣式 */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .table-container {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            button {
+                padding: 8px 16px;
+                font-size: 0.9em;
+            }
+
+            input[type="text"] {
+                width: 100%;
+                margin: 10px 0;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-  
+
         <!-- 左側表格 -->
         <div class="table-container">
             <button onclick="refreshAll()">重新整理</button>
-            <table id="users-table">
+            <table id="users-table" style="scroll:auto">
                 <caption>最後訊息清單</caption>
                 <thead>
                     <tr>
@@ -111,7 +146,7 @@
         </div>
 
         <!-- 右側表格 -->
-        <div class="table-container" style="width: 50%;">
+        <div class="table-container">
             <table id="stop-user-table">
                 <caption>
                     AI 回應忽略清單<br>
@@ -231,9 +266,6 @@
             refreshUsersTables();
             refreshStopUserTables();
         });
-
-
-        
     </script>
 </body>
 </html>

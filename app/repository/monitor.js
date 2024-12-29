@@ -2,6 +2,7 @@ import storage from '../../storage/index.js';
 import { Monitor, UserInfo } from '../models/index.js';
 
 const FIELD_KEY = 'Monitor';
+const REDIS_HASHKEY = 'monitor';
 
 /**
  * @returns {Object.<string, UserInfo>}
@@ -78,10 +79,60 @@ const removeStopUser = (userId) => {
   }
 };
 
+const getUsersByRedis = async (redisClient) => {
+  const users = await redisClient.hGetAll(`${REDIS_HASHKEY}:users`) || {};
+  if (users) {
+    return Object.entries(users).map(value => JSON.parse(value[1]));
+  } else {
+    return [];
+  }
+}
+
+const addUserByRedis = async (userInfo, redisClient) => {
+  return await redisClient.hSet(`${REDIS_HASHKEY}:users`, userInfo.userId, JSON.stringify(userInfo));
+};
+
+const removeUserByRedis = async (userId, redisClient) => {
+  return await redisClient.hDel(`${REDIS_HASHKEY}:users`, userId);
+};
+
+/**
+ * @returns {Object.<string, UserInfo>}
+ */
+const getStopBotUsersIdByRedis = async (redisClient) => {
+  const stop_bot_users = await redisClient.hGetAll(`${REDIS_HASHKEY}:stop_bot_users`) || {};
+  if (stop_bot_users) {
+    return Object.entries(stop_bot_users).map(([key, value]) => ({key,value}));
+  } else {
+    return [];
+  }
+}
+
+/**
+ * @param {Object.<string, string>} userId
+ */
+const addStopBotUserByRedis = async (userId, redisClient) => {
+  const tk = new Date().getTime();
+  return await redisClient.hSet(`${REDIS_HASHKEY}:stop_bot_users`, userId, tk);
+};
+
+/**
+ * @param {Object.<string, string>} userId
+ */
+const removeStopUserByRedis = async (userId, redisClient) => {
+  return await redisClient.hDel(`${REDIS_HASHKEY}:stop_bot_users`, userId);
+};
+
 export {
   getUsers,
   addUser,
   getStopBotUserId,
   addStopUser,
   removeStopUser,
+  getUsersByRedis,
+  addUserByRedis,
+  removeUserByRedis,
+  getStopBotUsersIdByRedis,
+  addStopBotUserByRedis,
+  removeStopUserByRedis
 };

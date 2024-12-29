@@ -20,7 +20,7 @@ import {
   ImageMessage, Message, TemplateMessage, TextMessage,
 } from './messages/index.js';
 import { Bot, Event, Source, Monitor } from './models/index.js';
-import { getSources, setSources, addUser, getStopBotUserId, addStopUser, removeStopUser } from './repository/index.js';
+import { getSources, setSources, addUserByRedis } from './repository/index.js';
 
 class Context {
   /**
@@ -175,7 +175,7 @@ class Context {
           isActivated: !config.BOT_DEACTIVATED,
         }),
       });
-      addUser({
+      addUserByRedis({
         pictureUrl: pictureUrl,
         displayName: displayName,
         userId: userId,
@@ -183,7 +183,7 @@ class Context {
         lastMessageTime: new Date()
       });
     } else {
-      addUser({
+      addUserByRedis({
         pictureUrl: sources[this.userId].pictureUrl,
         displayName: sources[this.userId].name,
         userId: sources[this.userId].userId,

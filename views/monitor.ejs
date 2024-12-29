@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-tw">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,34 +7,44 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #e6f7ff; /* 淺藍背景 */
+            background-color: #e6f7ff;
             margin: 0;
             padding: 20px;
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            height: 100vh;
         }
 
         .container {
             display: flex;
             gap: 20px;
             width: 95%;
-            margin-top: 5%;
-            flex-wrap: wrap; /* 允許子項目換行 */
+            flex-wrap: nowrap;
         }
 
         .table-container {
-            background-color: #ffffff; /* 白色背景 */
+            background-color: #ffffff;
             border: 1px solid #cce7ff;
             border-radius: 8px;
             padding: 10px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            flex: 1;
-            min-width: 300px; /* 最小寬度 */
-          overflow-x: auto; /* 添加橫向卷軸 */
-          
-            min-height: 400px;
+            overflow-x: auto;
+            min-height: 300px;
+        }
+
+        .table-container-left {
+            flex: 0 1 70%;
+        }
+
+        .table-container-right {
+            flex: 0 1 30%;
+        }
+
+        .table-header {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
         }
 
         table {
@@ -57,19 +67,7 @@
             background-color: #f0faff;
         }
 
-        caption {
-            font-size: 1.2em;
-            margin-bottom: 10px;
-            color: #003366;
-        }
-
-        .input-container {
-            margin-top: 20px;
-            text-align: center;
-        }
-
         button {
-            margin: 5px;
             padding: 10px 20px;
             font-size: 1em;
             color: #fff;
@@ -88,37 +86,20 @@
             font-size: 1em;
             border: 1px solid #cce7ff;
             border-radius: 5px;
-            margin-right: 10px;
             width: 200px;
         }
 
-        /* RWD 樣式 */
         @media (max-width: 768px) {
-            body {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
             .container {
-                flex-direction: column;
-                align-items: center;
+                flex-wrap: wrap;
             }
 
             .table-container {
-                width: 100%;
+                flex: 0 0 100%;
+            }
+
+            .table-container-left {
                 margin-bottom: 20px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            button {
-                padding: 8px 16px;
-                font-size: 0.9em;
-            }
-
-            input[type="text"] {
-                width: 100%;
-                margin: 10px 0;
             }
         }
     </style>
@@ -127,10 +108,14 @@
     <div class="container">
 
         <!-- 左側表格 -->
-        <div class="table-container">
-            <button onclick="refreshAll()">重新整理</button>
-            <table id="users-table" style="scroll:auto">
-                <caption>最後訊息清單</caption>
+        <div class="table-container table-container-left">
+            <caption>聯絡人清單</caption>
+            <div class="table-header">
+                <button onclick="refreshAll()">重新整理</button>
+                <input id="displayName" type="text" placeholder="搜尋內容">
+                <button onclick="searchUser()">搜尋</button>
+            </div>
+            <table id="users-table">
                 <thead>
                     <tr>
                         <th>最後時間</th>
@@ -141,20 +126,19 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <!-- 動態內容 -->
                 </tbody>
             </table>
         </div>
 
         <!-- 右側表格 -->
-        <div class="table-container">
+        <div class="table-container table-container-right">
+            <caption>暫停AI回應清單</caption>
+            <div class="table-header">
+                <input id="stop-user-id" type="text" placeholder="新增內容">
+                <button onclick="addStopUser()">新增</button>
+            </div>
             <table id="stop-user-table">
-                <caption>
-                    AI 回應忽略清單<br>
-                    <div class="input-container">
-                        <input type="text" id="ignore-input" placeholder="輸入忽略項目">
-                        <button id="ignore-btn" onclick="addStopUser()">增加</button>
-                    </div>
-                </caption>
                 <thead>
                     <tr>
                         <th>代號</th>
@@ -162,16 +146,46 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <!-- 動態內容 -->
                 </tbody>
             </table>
         </div>
+
     </div>
     <script>
       
-        async function getUsers() {
+        async function searchUser() {
             try {
-                const response = await fetch(`/users}`, {
-                    method: 'GET',
+                const input = document.getElementById('displayName');
+                fetch('/users')
+                .then(response => response.json())
+                .then(data => {
+                    const usersTableBody = document.querySelector('#users-table tbody');
+                    usersTableBody.innerHTML = "";
+
+                    const fData = data.filter(x => x.displayName.toLowerCase().indexOf(input.value.toLowerCase()) >= 0);
+                    const row = document.createElement('tr');
+                    fData.forEach(d => {
+                        row.innerHTML = `
+                        <td>${timeToYYYYMMDD(d.lastMessageTime)}</td>
+                        <td><img src='${d.pictureUrl}' width="50" /></td>
+                        <td>${d.displayName}</td>
+                        <td>${d.userId}</td>
+                        <td><button onclick="removeUser('${d.userId}')">刪除</button>
+                            <button onclick="addStopUser('${d.userId}')">AI 暫停</button></td>`;
+                        usersTableBody.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Error fetching data:', error));
+            } catch (error) {
+                console.error('Error adding entry:', error);
+            }
+        }
+
+        async function removeUser(userId) {
+            try {
+                const response = await fetch(`/removeUser/${userId}`, {
+                    method: 'DELETE',
                     headers: { 'Content-Type': 'application/json' },
                 });
                 if (!response.ok) throw new Error('Failed to add entry');
@@ -197,7 +211,7 @@
         async function addStopUser(uId) {
             try {
                 var userId;
-                const input = document.getElementById('ignore-input');
+                const input = document.getElementById('stop-user-id');
                 if (uId) {
                     userId = uId;
                 } else {
@@ -228,11 +242,12 @@
                 const row = document.createElement('tr');
                 data.forEach(d => {
                     row.innerHTML = `
-                    <td>${d.lastMessageTime}</td>
+                    <td>${timeToYYYYMMDD(d.lastMessageTime)}</td>
                     <td><img src='${d.pictureUrl}' width="50" /></td>
                     <td>${d.displayName}</td>
                     <td>${d.userId}</td>
-                    <td><button onclick="addStopUser('${d.userId}')">AI 暫停</button></td>`;
+                    <td><button onclick="removeUser('${d.userId}')">刪除</button>
+                        <button onclick="addStopUser('${d.userId}')">AI 暫停</button></td>`;
                     usersTableBody.appendChild(row);
                 });
             })
@@ -245,11 +260,11 @@
             fetch('/stopUsers')
             .then(response => response.json())
             .then(data => {
-                const row = document.createElement('tr');
-                data.forEach(id => {
+                data.forEach(d => {
+                    const row = document.createElement('tr');
                     row.innerHTML = `
-                    <td>${id}</td>
-                    <td><button onclick="removeStopUser('${id}')">刪除</button></td>`;
+                    <td>${d.key}</td>
+                    <td><button onclick="removeStopUser('${d.key}')">刪除</button></td>`;
                     stopUserTableBody.appendChild(row);
                 });
             })
@@ -257,8 +272,29 @@
         }
 
         function refreshAll(){
+            const input = document.getElementById('displayName');
+            input.value = '';
             refreshUsersTables();
             refreshStopUserTables();
+        }
+
+        function timeToYYYYMMDD(timestamp) {
+            const date = new Date(timestamp);
+            const options = {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false, // 使用 24 小時制
+            };
+
+            const formattedDate = new Intl.DateTimeFormat('zh-tw', options)
+            .format(date)
+            .replace(',', ''); // 去掉日期和時間之間的逗號
+
+            return formattedDate;
         }
 
         // 等待 DOM 加載完成後執行

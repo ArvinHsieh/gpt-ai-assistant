@@ -1,13 +1,10 @@
 import { getSources, updateSources, setSources } from './source.js';
-import { addUser, getStopBotUserId, addStopUser, removeStopUser } from './monitor.js';
+import { addUserByRedis } from './monitor.js';
 export {
   getSources,
   updateSources,
   setSources,
-  addUser,
-  getStopBotUserId,
-  addStopUser,
-  removeStopUser,
+  addUserByRedis,
 };
 
 export default null;

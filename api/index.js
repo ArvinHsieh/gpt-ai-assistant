@@ -16,6 +16,7 @@ import {
 import { createClient } from 'redis';
 import { getUsersByRedis } from '../app/repository/monitor.js';
 
+var redisTimer;
 const app = express();
 
 app.set('view engine', 'ejs');
@@ -27,21 +28,63 @@ app.use(express.json({
   },
 }));
 
+// Redis 客戶端初始化函數，帶自動重連功能
+const createRedisClient = () => {
+  const client = createClient({
+      url: config.REDIS_URL,
+      socket: {
+          connectTimeout: 10000,
+          reconnectStrategy: (retries) => {
+              console.log(`Redis reconnect attempt: ${retries}`);
+              if (retries > 10) {
+                  console.error('Max reconnect attempts reached. Exiting...');
+                  process.exit(1); // 達到最大重連次數，退出程序
+              }
+              return Math.min(retries * 100, 3000); // 每次重連間隔增加，最大 3 秒
+          },
+      },
+  });
+
+  // 監控錯誤事件
+  client.on('error', (err) => {
+      console.error('Redis error:', err.message);
+  });
+
+  // 監控連線事件
+  client.on('connect', () => {
+      console.log('Connected to Redis');
+  });
+
+  // 監控重連事件
+  client.on('reconnecting', () => {
+      console.log('Reconnecting to Redis...');
+  });
+
+  // 監控關閉事件
+  client.on('end', () => {
+      console.log('Redis connection closed');
+  });
+
+  redisTimer = setInterval(async () => {
+    try {
+        await redisClient.ping();
+        //console.log('Ping successful');
+    } catch (err) {
+        console.error('Redis Ping failed:', err);
+    }
+  }, 60000); // 每分鐘發送一次 PING
+
+  return client;
+};
 
 (async () => {
   // 創建 Redis 客戶端
-  const redisClient = createClient({ url: config.REDIS_URL });
-
-  // 監控連線錯誤
-  redisClient.on('error', (err) => {
-      console.error('Redis Client Error:', err);
-  });
+  const redisClient = createRedisClient();
 
   try {
       // 連接 Redis
       await redisClient.connect();
-      console.log('Connected to Redis');
-
+      
       // 將 Redis 客戶端注入到 Express app，供全局使用
       app.locals.redisClient = redisClient;
 
@@ -56,13 +99,14 @@ app.use(express.json({
       });
       
       app.get('/monitor', (req, res) => {
-        // const serverVariable = { name: 'John Doe', age: 30 };
-        res.render('monitor'); // { data: serverVariable }
+        try {
+          // const serverVariable = { name: 'John Doe', age: 30 };
+          res.render('monitor'); // { data: serverVariable }
+        } catch (error) {
+          console.error(err.message);
+          res.sendStatus(500);
+        }
       });
-      
-      //app.get('/monitor', (req, res) => {
-      //  res.sendfile('./api/monitor.html');
-      //});
       
       app.post(config.APP_WEBHOOK_PATH, validateLineSignature, redisMiddleware, async (req, res) => {
         try {
@@ -158,23 +202,26 @@ app.use(express.json({
         if (config.APP_DEBUG) printPrompts();
       });
 
-      setInterval(async () => {
-        try {
-            await redisClient.ping();
-            //console.log('Ping successful');
-        } catch (err) {
-            console.error('Redis Ping failed:', err);
-        }
-      }, 60000); // 每分鐘發送一次 PING
-
       // 啟動伺服器
       if (config.APP_PORT) {
         app.listen(config.APP_PORT);
       }
   } catch (err) {
+      clearInterval(redisTimer);
       console.error('Error connecting to Redis:', err);
       process.exit(1); // 無法連線時退出
   }
+
+  // 處理應用退出時的清理工作
+  process.on('SIGINT', async () => {
+    console.log('Shutting down server...');
+    if (app.locals.redisClient) {
+      await app.locals.redisClient.quit();
+      console.log('Redis client disconnected');
+    }
+    clearInterval(redisTimer);
+    process.exit(0);
+  });
 })();
 
 export default app;

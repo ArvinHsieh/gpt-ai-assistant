@@ -97,7 +97,7 @@ const removeUserByRedis = async (userId, redisClient) => {
 };
 
 /**
- * @returns {Object.<string, UserInfo>}
+ * @returns {[{key, value}]>}
  */
 const getStopBotUsersIdByRedis = async (redisClient) => {
   const stop_bot_users = await redisClient.hGetAll(`${REDIS_HASHKEY}:stop_bot_users`) || {};

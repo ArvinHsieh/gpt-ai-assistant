@@ -1,14 +1,14 @@
 import Context from '../context.js';
-import { getUsers, addUser, getStopBotUserId, addStopUser, removeStopUser } from '../repository/monitor.js';
+import { getStopBotUsersIdByRedis } from '../repository/monitor.js';
 
 /**
  * @param {Context} context
  * @returns {boolean}
  */
-const check = (context) => {
-  const stopUsers = getStopBotUserId();
-  if (stopUsers.length > 0) {
-      if (stopUsers.indexOf(context.userId) != -1) {
+const check = async (context) => {
+  const stopBotUsers = await getStopBotUsersIdByRedis(context.redisClient);
+  if (stopBotUsers.length > 0) {
+      if (stopBotUsers.filter(x => x.key == context.userId).length > 0) {
            return true;
       }
       return false;
@@ -19,7 +19,7 @@ const check = (context) => {
  * @param {Context} context
  * @returns {Promise<Context>}
  */
-const exec = (context) => check(context) && (
+const exec = async (context) => await check(context) && (
   async () => {
     try {
       context.pushText(""); 

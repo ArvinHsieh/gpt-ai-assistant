@@ -25,7 +25,7 @@ import Event from './models/event.js';
  * @returns {Promise<Context>}
  */
 const handleContext = async (context) => (
-  stopReplay(context)
+  await stopReplay(context)
   || ignoreWordHandler(context)
   || activateHandler(context)
   || commandHandler(context)
@@ -44,7 +44,7 @@ const handleContext = async (context) => (
   || context
 );
 
-const handleEvents = async (events = []) => (
+const handleEvents = async (events = [], redisClient) => (
   (Promise.all(
     (await Promise.all(
       (await Promise.all(
@@ -53,7 +53,7 @@ const handleEvents = async (events = []) => (
           .filter((event) => event.isMessage)
           .filter((event) => event.isText || event.isAudio || event.isImage)
           .map((event) => new Context(event))
-          .map((context) => context.initialize()),
+          .map((context) => context.initialize(redisClient)),
       ))
         .map((context) => (context.error ? context : handleContext(context))),
     ))

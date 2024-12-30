@@ -43,6 +43,8 @@ class Context {
    */
   messages = [];
 
+  redisClient;
+
   /**
    * @param {Event} event
    */
@@ -110,8 +112,9 @@ class Context {
     return false;
   }
 
-  async initialize() {
+  async initialize(redisClient) {
     try {
+      this.redisClient = redisClient;
       this.validate();
       await this.register();
     } catch (err) {
@@ -180,16 +183,16 @@ class Context {
         displayName: displayName,
         userId: userId,
         statusMessage: statusMessage,
-        lastMessageTime: new Date()
-      });
+        lastMessageTime: new Date().getTime()
+      }, this.redisClient);
     } else {
       addUserByRedis({
         pictureUrl: sources[this.userId].pictureUrl,
         displayName: sources[this.userId].name,
         userId: sources[this.userId].userId,
         statusMessage: sources[this.userId].statusMessage,
-        lastMessageTime: new Date()
-      });
+        lastMessageTime: new Date().getTime()
+      }, this.redisClient);
     }
     Object.assign(sources, newSources);
     if (Object.keys(newSources).length > 0) await setSources(sources);

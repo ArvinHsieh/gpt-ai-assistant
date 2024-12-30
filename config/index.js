@@ -53,6 +53,7 @@ const config = Object.freeze({
   SERPAPI_API_KEY: env.SERPAPI_API_KEY || null,
   SERPAPI_LOCATION: env.SERPAPI_LOCATION || 'tw',
   IGNORE_WORD: env.IGNORE_WORD || null,
+  REDIS_URL: env.REDIS_URL || "127.0.0.1:6379",
 });
 
 export default config;

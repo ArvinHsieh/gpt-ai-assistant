@@ -30,7 +30,7 @@ app.use(express.json({
 
 (async () => {
   // 創建 Redis 客戶端
-  const redisClient = createClient({ url: process.env.REDIS_URL });
+  const redisClient = createClient({ url: config.REDIS_URL });
 
   // 監控連線錯誤
   redisClient.on('error', (err) => {

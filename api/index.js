@@ -33,6 +33,7 @@ const createRedisClient = () => {
   const client = createClient({
       url: config.REDIS_URL,
       socket: {
+          keepAlive: true,
           connectTimeout: 10000,
           reconnectStrategy: (retries) => {
               console.log(`Redis reconnect attempt: ${retries}`);
@@ -53,6 +54,15 @@ const createRedisClient = () => {
   // 監控連線事件
   client.on('connect', () => {
       console.log('Connected to Redis');
+
+      redisTimer = setInterval(async () => {
+        try {
+            await client.ping();
+            //console.log('Ping successful');
+        } catch (err) {
+            console.error('Redis Ping failed:', err);
+        }
+      }, 60000); // 每分鐘發送一次 PING
   });
 
   // 監控重連事件
@@ -63,16 +73,8 @@ const createRedisClient = () => {
   // 監控關閉事件
   client.on('end', () => {
       console.log('Redis connection closed');
+      clearInterval(redisTimer);
   });
-
-  redisTimer = setInterval(async () => {
-    try {
-        await redisClient.ping();
-        //console.log('Ping successful');
-    } catch (err) {
-        console.error('Redis Ping failed:', err);
-    }
-  }, 60000); // 每分鐘發送一次 PING
 
   return client;
 };
@@ -84,7 +86,7 @@ const createRedisClient = () => {
   try {
       // 連接 Redis
       await redisClient.connect();
-      
+
       // 將 Redis 客戶端注入到 Express app，供全局使用
       app.locals.redisClient = redisClient;
 
@@ -207,7 +209,6 @@ const createRedisClient = () => {
         app.listen(config.APP_PORT);
       }
   } catch (err) {
-      clearInterval(redisTimer);
       console.error('Error connecting to Redis:', err);
       process.exit(1); // 無法連線時退出
   }

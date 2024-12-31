@@ -214,7 +214,7 @@ const createRedisClient = () => {
   }
 
   // 處理應用退出時的清理工作
-  process.on('SIGINT', async () => {
+  /*process.on('SIGINT', async () => {
     console.log('Shutting down server...');
     if (app.locals.redisClient) {
       await app.locals.redisClient.quit();
@@ -222,7 +222,7 @@ const createRedisClient = () => {
     }
     clearInterval(redisTimer);
     process.exit(0);
-  });
+  });*/
 })();
 
 export default app;

@@ -246,8 +246,8 @@
             fetch('/users')
             .then(response => response.json())
             .then(data => {
-                const row = document.createElement('tr');
                 data.forEach(d => {
+                    const row = document.createElement('tr');
                     row.innerHTML = `
                     <td>${timeToYYYYMMDD(d.lastMessageTime)}</td>
                     <td><img src='${d.pictureUrl}' width="50" /></td>

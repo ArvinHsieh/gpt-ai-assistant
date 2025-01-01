@@ -3,7 +3,7 @@ const REDIS_HASHKEY = 'monitor';
 const getUsersByRestApi = async (redisClient) => {
   const users = await redisClient.hgetall(`${REDIS_HASHKEY}:users`) || {};
   if (users) {
-    return Object.entries(users).map(value => JSON.parse(value[1]));
+    return Object.entries(users).map(value => value[1]);
   } else {
     return [];
   }

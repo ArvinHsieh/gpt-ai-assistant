@@ -153,6 +153,7 @@
 
     </div>
     <script>
+        const opDelay = 500;
       
         async function searchUser() {
             try {
@@ -189,7 +190,9 @@
                     headers: { 'Content-Type': 'application/json' },
                 });
                 if (!response.ok) throw new Error('Failed to add entry');
-                await refreshUsersTables();
+                setTimeout(() => {
+                    refreshUsersTables();
+                }, opDelay);
             } catch (error) {
                 console.error('Error adding entry:', error);
             }
@@ -202,7 +205,9 @@
                     headers: { 'Content-Type': 'application/json' },
                 });
                 if (!response.ok) throw new Error('Failed to add entry');
-                await refreshStopUserTables();
+                setTimeout(() => {
+                    refreshStopUserTables();
+                }, opDelay);
             } catch (error) {
                 console.error('Error adding entry:', error);
             }
@@ -223,8 +228,10 @@
                         headers: { 'Content-Type': 'application/json' },
                     });
                     if (!response.ok) throw new Error('Failed to add entry');
-                    await refreshStopUserTables();
                     input.value = '';
+                    setTimeout(() => {
+                        refreshStopUserTables();
+                    }, opDelay);
                 } else {
                     alert('請輸入有效的內容');
                 }

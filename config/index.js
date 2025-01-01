@@ -54,6 +54,8 @@ const config = Object.freeze({
   SERPAPI_LOCATION: env.SERPAPI_LOCATION || 'tw',
   IGNORE_WORD: env.IGNORE_WORD || null,
   REDIS_URL: env.REDIS_URL || "127.0.0.1:6379",
+  KV_REST_API_URL: env.KV_REST_API_URL || null,
+  KV_REST_API_TOKEN: env.KV_REST_API_TOKEN || null,
 });
 
 export default config;

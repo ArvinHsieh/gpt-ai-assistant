@@ -13,8 +13,17 @@ import {
   addStopBotUserByRedis,
   removeStopUserByRedis,
  } from '../app/repository/monitor.js';
+ import { 
+  addUserByRestApi,
+  removeUserByRestApi,
+  getStopBotUsersIdByRestApi,
+  addStopBotUserByRestApi,
+  removeStopUserByRestApi,
+  getUsersByRestApi,
+ } from '../app/repository/monitor-restapi.js';
 import { createClient } from 'redis';
 import { getUsersByRedis } from '../app/repository/monitor.js';
+import { Redis } from '@upstash/redis';
 
 var redisTimer;
 const app = express();
@@ -37,7 +46,7 @@ const createRedisClient = () => {
           connectTimeout: 10000,
           reconnectStrategy: (retries) => {
               console.log(`Redis reconnect attempt: ${retries}`);
-              if (retries > 10) {
+              if (retries > 5) {
                   console.error('Max reconnect attempts reached. Exiting...');
                   process.exit(1); // 達到最大重連次數，退出程序
               }
@@ -81,14 +90,22 @@ const createRedisClient = () => {
 
 (async () => {
   // 創建 Redis 客戶端
-  const redisClient = createRedisClient();
+  //const redisClient = createRedisClient();
 
   try {
       // 連接 Redis
-      await redisClient.connect();
+      //await redisClient.connect();
 
       // 將 Redis 客戶端注入到 Express app，供全局使用
-      app.locals.redisClient = redisClient;
+      //app.locals.redisClient = redisClient;
+
+      // 將 RedisApi 建立方法注入到 Express app
+      app.locals.redisClient = () => {
+        return new Redis({
+          url: config.KV_REST_API_URL,
+          token: config.KV_REST_API_TOKEN,
+        });
+      }
 
       app.get('/', async (req, res) => {
         if (config.APP_URL) {
@@ -112,7 +129,7 @@ const createRedisClient = () => {
       
       app.post(config.APP_WEBHOOK_PATH, validateLineSignature, redisMiddleware, async (req, res) => {
         try {
-          const client = req.redisClient;
+          const client = req.redisClient();
           await storage.initialize();
           await handleEvents(req.body.events, client);
           res.sendStatus(200);
@@ -125,8 +142,8 @@ const createRedisClient = () => {
       
       app.get('/users', redisMiddleware, async (req, res) => {
         try {
-          const client = req.redisClient;
-          const us = await getUsersByRedis(client);
+          const client = req.redisClient();
+          const us = await getUsersByRestApi(client);
           res.status(200).send(us);
         } catch (err) {
           console.error(err.message);
@@ -137,8 +154,8 @@ const createRedisClient = () => {
       
       app.post('/addUser', redisMiddleware, async (req, res) => {
         try {
-          const client = req.redisClient;
-          const r = await addUserByRedis({
+          const client = req.redisClient();
+          const r = await addUserByRestApi({
             displayName: "TEST",
             userId: "abcd12345",
             pictureUrl: "",
@@ -155,9 +172,9 @@ const createRedisClient = () => {
 
       app.delete('/removeUser/:id', redisMiddleware, async (req, res) => {
         try {
-          const client = req.redisClient;
+          const client = req.redisClient();
           const userId = req.params.id;
-          const r = await removeUserByRedis(userId, client);
+          const r = await removeUserByRestApi(userId, client);
           res.sendStatus(200);
         } catch (err) {
           console.error(err.message);
@@ -168,8 +185,8 @@ const createRedisClient = () => {
       
       app.get('/stopUsers', redisMiddleware, async (req, res) => {
         try {
-          const client = req.redisClient;
-          const u = await getStopBotUsersIdByRedis(client);
+          const client = req.redisClient();
+          const u = await getStopBotUsersIdByRestApi(client);
           res.status(200).send(u);
         } catch (err) {
           console.error(err.message);
@@ -180,9 +197,9 @@ const createRedisClient = () => {
       
       app.post('/addStopUser/:id', redisMiddleware, async (req, res) => {
         try {
-          const client = req.redisClient;
+          const client = req.redisClient();
           const userId = req.params.id;
-          const s = await addStopBotUserByRedis(userId, client);
+          const s = await addStopBotUserByRestApi(userId, client);
           res.sendStatus(200);
         } catch (err) {
           console.error(err.message);
@@ -193,9 +210,9 @@ const createRedisClient = () => {
       
       app.delete('/removeStopUser/:id', redisMiddleware, async (req, res) => {
         try {
-          const client = req.redisClient;
+          const client = req.redisClient();
           const userId = req.params.id;
-          removeStopUserByRedis(userId, client);
+          removeStopUserByRestApi(userId, client);
           res.sendStatus(200);
         } catch (err) {
           console.error(err.message);

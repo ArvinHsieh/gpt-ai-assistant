@@ -5,6 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LINE Bot 監控</title>
     <style>
+        .delete {
+            width: 30px;
+            height: 30px;
+            background-color: #f0faff;
+            background-image: url(data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAsQAAALEBxi1JjQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAALRSURBVFiFvddJixVXFAfwX/fCRmKDA6TpqODQuwjdkOjauAyunFD8EMYWHFaJgpigKK6M+jmSTUQFUVtFRD+AohBFHJLYihN2ZXFPpcqy6lW9ps0fivdeneF/7j3DvW9AdwxjIzZgHCuwMGR/4x5u4zx+w3QfvntiFKfwClnH5xXOYqzN+UAP2XwcwCS+iHcZbuAiHsYzEEF+he/wbcnvexzHj3jbutQSxnBHsaJn2BskbViKfWGT21/GSFfyCTwOwxkcU+S6HyySVj8Tvh5gTZvRWIn8JTbNgriKzeErw309dmK+YttfSrmcK6wtBXEZQ3VKh0Lhg7lZeRVbFOk4UhWOliI89hnIc5wIjrdYXRacUlR7XcHtwZRUoG2YCN3JGtkiPA+uM/nLYcWQ2dvgdCrkT1uCmAidDFcadPYr6mwB7FC03NIOjpuC6KIDyxS1sI00MjNca1pWYBxPQvcvH3dJmbwqq8ON0D0N1+PHLy1GTUH0Sw5HQ39KyeGuDobVIF5IJ2E/5PBD2DwmtUQm9WlXjAdhPutf9EFOyn2GN4Oll71Oxir60e1pPyhFT7eTjpTzc9K8mJZSMIw/dN+F0fj8ZxB340dTC9aRLwniDVgvFeHCPoLIue6SJlKXNuxV7b1atA55G/4K2/2/g2i5YhBt5eNRvK/BaDaj+GqDzoGQTyuuev9Nw2fSgVHFZDjsehhdxe4a2WLFYXS6LBjDuxAc70AyW5wMjjdYWRX+rKiFzZ+BfKsi94frFIak61J+VK6dQ/J1ijq7hHlNiiPS7TXDa+ycA/ItOl5Kc6wpBTEjXaPqCrMNi6Wc59t+H193NR5RpCOTKne/dJlow3Kp1fJqz7f9yzrlXofKEH6SWjDPWYabuIA/8Sjej0Zw6/FNye876ZJ7ML7PCqukcZ3nscszLfX5J61WRT/H6gJ8Lx1AE+G8+vf8lvT3/Hep6lvxL1ilBVt9ldRBAAAAAElFTkSuQmCC);
+            background-position: center; /* 置中圖片 */
+            background-repeat: no-repeat; /* 不重複圖片 */
+            background-size: contain; /* 調整圖片大小以適合按鈕，或使用 cover 來覆蓋按鈕 */
+        }
+
+        .stop {
+            width: 30px;
+            height: 30px;
+            background-color: #f0faff;
+            background-image: url(data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAA3NCSVQICAjb4U/gAAAACXBIWXMAAA69AAAOvQFH+5CtAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAGlQTFRF////AAAAAAAAAAAAAAAAAAAABgAGBQAFBQAFBAAEAwADAwADAwADBAIEBAIEBAIEAwIDAwIDAwIFAwIFAwEEAwEEAwEEAwEEAwEEAgEEAgEEBAEEAwEFAwEEAwEEAwEEAwEEAwEEAwEEPD5UPwAAACJ0Uk5TAAcIDRgZLTAxRUlNUYCBhJeYoKiutbvByNDT2uHj7fLz9S9YCN0AAADqSURBVDjLhZPdmoIwDEQHEBV0ge4qIP+c93/IvYAFVuHLuWuSdto0Iy14sSvqYagLF3v6JMx6FvosfEv76QjQvZ7PVwcwpv42fyqBJrlOq8tXA5SnNX9uAResgcAB7XnZ30IT/deMGmjnM/wSHoHeCB5QTvdIofnIS0EDqSSFI0TaIYIxlJSB0y4OMsnrdwVmkd5TDMkcuH3P3OZAArEcXNYjJ/4kr+BU0OmoQB2FaqrjgopaA/lxQc5gF5gS5iXNZ24adf+ZuW8bZbba/Cz7u82BsUfOHFp77G3jrNar8rzas55M80pH9v8F1bwrFb3hmREAAAAASUVORK5CYII=);
+            background-position: center; /* 置中圖片 */
+            background-repeat: no-repeat; /* 不重複圖片 */
+            background-size: contain; /* 調整圖片大小以適合按鈕，或使用 cover 來覆蓋按鈕 */
+        }
+
+        .delete:hover,
+        .stop:hover {
+            background-color: #e3ebf4;
+        }
+
         body {
             font-family: Arial, sans-serif;
             background-color: #e6f7ff;
@@ -30,6 +55,7 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             overflow-x: auto;
             min-height: 300px;
+            max-height: 600px;
         }
 
         .table-container-left {
@@ -120,8 +146,7 @@
                     <tr>
                         <th>最後時間</th>
                         <th>照片</th>
-                        <th>暱稱</th>
-                        <th>代號</th>
+                        <th>暱稱/代號</th>
                         <th>功能</th>
                     </tr>
                 </thead>
@@ -154,6 +179,7 @@
     </div>
     <script>
         const opDelay = 500;
+        var users = [];
       
         async function searchUser() {
             try {
@@ -161,6 +187,8 @@
                 fetch('/users')
                 .then(response => response.json())
                 .then(data => {
+                    users = data;
+
                     const usersTableBody = document.querySelector('#users-table tbody');
                     usersTableBody.innerHTML = "";
 
@@ -172,8 +200,8 @@
                         <td><img src='${d.pictureUrl}' width="50" /></td>
                         <td>${d.displayName}</td>
                         <td>${d.userId}</td>
-                        <td><button onclick="removeUser('${d.userId}')">刪除</button>
-                            <button onclick="addStopUser('${d.userId}')">AI 暫停</button></td>`;
+                        <td><button class="delete" onclick="removeUser('${d.userId}')"></button>
+                            <button class="stop" onclick="addStopUser('${d.userId}')"></button></td>`;
                         usersTableBody.appendChild(row);
                     });
                 })
@@ -184,7 +212,9 @@
         }
 
         async function removeUser(userId) {
-            try {
+            var r = confirm("確定刪除使用者?");
+            if (r){
+                try {
                 const response = await fetch(`/removeUser/${userId}`, {
                     method: 'DELETE',
                     headers: { 'Content-Type': 'application/json' },
@@ -196,6 +226,10 @@
             } catch (error) {
                 console.error('Error adding entry:', error);
             }
+            } else {
+
+            }
+          
         }
 
         async function removeStopUser(userId) {
@@ -240,49 +274,56 @@
             }
         }
         
-        function refreshUsersTables(){
+        async function refreshUsersTables(){
             const usersTableBody = document.querySelector('#users-table tbody');
             usersTableBody.innerHTML = "";
-            fetch('/users')
-            .then(response => response.json())
-            .then(data => {
-                data.forEach(d => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                    <td>${timeToYYYYMMDD(d.lastMessageTime)}</td>
-                    <td><img src='${d.pictureUrl}' width="50" /></td>
-                    <td>${d.displayName}</td>
-                    <td>${d.userId}</td>
-                    <td><button onclick="removeUser('${d.userId}')">刪除</button>
-                        <button onclick="addStopUser('${d.userId}')">AI 暫停</button></td>`;
-                    usersTableBody.appendChild(row);
-                });
-            })
-            .catch(error => console.error('Error fetching data:', error));
+            usersTableBody.innerHTML = `<tr><td colspan="4">Loading...</td></tr>`;
+            try {
+                var r = await fetch('/users');
+                var data = await r.json();
+                users = data;
+                usersTableBody.innerHTML = "";
+                    data.forEach(d => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                        <td>${timeToYYYYMMDD(d.lastMessageTime)}</td>
+                        <td><img src='${d.pictureUrl}' width="50" /></td>
+                        <td><div style="text-align:left;">${d.displayName}<hr/>${d.userId}</div></td>
+                        <td><button class="delete" onclick="removeUser('${d.userId}')"></button>
+                            <button class="stop" onclick="addStopUser('${d.userId}')"></button></td>`;
+                        usersTableBody.appendChild(row);
+                    });
+            } catch(error) {
+                console.error('Error fetching data:', error)
+            }
         }
 
-        function refreshStopUserTables(){
+        async function refreshStopUserTables(){
             const stopUserTableBody = document.querySelector('#stop-user-table tbody');
             stopUserTableBody.innerHTML = "";
-            fetch('/stopUsers')
-            .then(response => response.json())
-            .then(data => {
-                data.forEach(d => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                    <td>${d.key}</td>
-                    <td><button onclick="removeStopUser('${d.key}')">刪除</button></td>`;
-                    stopUserTableBody.appendChild(row);
-                });
-            })
-            .catch(error => console.error('Error fetching data:', error));
+            stopUserTableBody.innerHTML = `<tr><td colspan="2">Loading...</td></tr>`;
+            try {
+                var r = await fetch('/stopUsers');
+                var data = await r.json();
+                stopUserTableBody.innerHTML = "";
+                    data.forEach(d => {
+                        var n = users.filter(x=> x.userId == d.key);
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                        <td><div style="text-align:left;">${n[0].displayName || ""}<hr/>${d.key}</div></td>
+                        <td><button class="delete" onclick="removeStopUser('${d.key}')"></button></td>`;
+                        stopUserTableBody.appendChild(row);
+                    });
+            } catch (error) {
+                console.error('Error fetching data:', error)
+            }
         }
 
-        function refreshAll(){
+        async function refreshAll(){
             const input = document.getElementById('displayName');
             input.value = '';
-            refreshUsersTables();
-            refreshStopUserTables();
+            await refreshUsersTables();
+            await refreshStopUserTables();
         }
 
         function timeToYYYYMMDD(timestamp) {
@@ -306,8 +347,7 @@
 
         // 等待 DOM 加載完成後執行
         document.addEventListener('DOMContentLoaded', () => {
-            refreshUsersTables();
-            refreshStopUserTables();
+            refreshAll();
         });
     </script>
 </body>

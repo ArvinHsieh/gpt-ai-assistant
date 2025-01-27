@@ -40,7 +40,7 @@ const exec = (context) => check(context) && (
       //[COMMAND_BOT_FORGET] : 
       [] : // 拿掉忘記按鈕
       [COMMAND_BOT_CONTINUE];
-      context.pushText(`${text}(此為智能回覆)`, actions);
+      context.pushText(`${text}(此為AI智能回覆)`, actions);
     } catch (err) {
       context.pushError(err);
     }

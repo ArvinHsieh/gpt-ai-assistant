@@ -155,13 +155,13 @@ const createRedisClient = () => {
       app.post('/addUser', redisMiddleware, async (req, res) => {
         try {
           const client = req.redisClient();
-          const r = await addUserByRestApi({
+          const r = await addUserByRestApi(client, {
             displayName: "TEST",
             userId: "abcd12345",
             pictureUrl: "",
             statusMessage: "active",
             lastMessageTime: new Date().getTime()
-          }, client);
+          });
           res.sendStatus(200);
         } catch (err) {
           console.error(err.message);
@@ -174,7 +174,7 @@ const createRedisClient = () => {
         try {
           const client = req.redisClient();
           const userId = req.params.id;
-          const r = await removeUserByRestApi(userId, client);
+          const r = await removeUserByRestApi(client, userId);
           res.sendStatus(200);
         } catch (err) {
           console.error(err.message);
@@ -199,7 +199,7 @@ const createRedisClient = () => {
         try {
           const client = req.redisClient();
           const userId = req.params.id;
-          const s = await addStopBotUserByRestApi(userId, client);
+          const s = await addStopBotUserByRestApi(client, userId);
           res.sendStatus(200);
         } catch (err) {
           console.error(err.message);
@@ -212,7 +212,8 @@ const createRedisClient = () => {
         try {
           const client = req.redisClient();
           const userId = req.params.id;
-          removeStopUserByRestApi(userId, client);
+          const userIds = userId.split(',');
+          removeStopUserByRestApi(client, userIds);
           res.sendStatus(200);
         } catch (err) {
           console.error(err.message);

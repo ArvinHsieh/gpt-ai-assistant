@@ -11,11 +11,11 @@ const getUsersByRestApi = async (redisClient) => {
   }
 }
 
-const addUserByRestApi = async (userInfo, redisClient) => {
+const addUserByRestApi = async (redisClient, userInfo) => {
   return await redisClient.hset(`${REDIS_HASHKEY}:users`, {[userInfo.userId]: JSON.stringify(userInfo)});
 };
 
-const removeUserByRestApi = async (userId, redisClient) => {
+const removeUserByRestApi = async (redisClient, userId) => {
   return await redisClient.hdel(`${REDIS_HASHKEY}:users`, userId);
 };
 
@@ -34,7 +34,7 @@ const getStopBotUsersIdByRestApi = async (redisClient) => {
 /**
  * @param {Object.<string, string>} userId
  */
-const addStopBotUserByRestApi = async (userId, redisClient) => {
+const addStopBotUserByRestApi = async (redisClient, userId) => {
   const tk = new Date().getTime();
   return await redisClient.hset(`${REDIS_HASHKEY}:stop_bot_users`, { [userId]: tk});
 };
@@ -42,8 +42,8 @@ const addStopBotUserByRestApi = async (userId, redisClient) => {
 /**
  * @param {Object.<string, string>} userId
  */
-const removeStopUserByRestApi = async (userId, redisClient) => {
-  return await redisClient.hdel(`${REDIS_HASHKEY}:stop_bot_users`, userId);
+const removeStopUserByRestApi = async (redisClient, userId) => {
+  return await redisClient.hdel(`${REDIS_HASHKEY}:stop_bot_users`, ...userId);
 };
 
 export {

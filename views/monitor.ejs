@@ -162,6 +162,7 @@
             <div class="table-header">
                 <input id="stop-user-id" type="text" placeholder="新增內容">
                 <button onclick="addStopUser()">新增</button>
+                <button onclick="removeStopUsers()">多刪</button>
             </div>
             <table id="stop-user-table">
                 <thead>
@@ -247,6 +248,30 @@
             }
         }
 
+        async function removeStopUsers() {
+            try {
+                const ckbs = document.getElementsByClassName("stopUser-key");
+                if (ckbs.length == 0) { return; }
+
+                var ids = [];
+                for(var i=0; i < ckbs.length; i++){
+                    if (ckbs[i].checked){
+                        ids.push(ckbs[i].value);
+                    }
+                }
+                const response = await fetch(`/removeStopUser/${ids.join(',')}`, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                });
+                if (!response.ok) throw new Error('Failed to add entry');
+                setTimeout(() => {
+                    refreshStopUserTables();
+                }, opDelay);
+            } catch (error) {
+                console.error('Error adding entry:', error);
+            }
+        }
+
         async function addStopUser(uId) {
             try {
                 var userId;
@@ -273,7 +298,7 @@
                 console.error('Error adding entry:', error);
             }
         }
-        
+
         async function refreshUsersTables(){
             const usersTableBody = document.querySelector('#users-table tbody');
             usersTableBody.innerHTML = "";
@@ -310,7 +335,7 @@
                         var n = users.filter(x=> x.userId == d.key);
                         const row = document.createElement('tr');
                         row.innerHTML = `
-                        <td><div style="text-align:left;">${n[0].displayName || ""}<hr/>${d.key}</div></td>
+                        <td><div style="text-align:left;"><input type="checkbox" class="stopUser-key" value="${d.key}" />${n[0].displayName || ""}<hr/>${d.key}</div></td>
                         <td><button class="delete" onclick="removeStopUser('${d.key}')"></button></td>`;
                         stopUserTableBody.appendChild(row);
                     });

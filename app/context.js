@@ -178,21 +178,21 @@ class Context {
           isActivated: !config.BOT_DEACTIVATED,
         }),
       });
-      addUserByRestApi({
+      addUserByRestApi(this.redisClient, {
         pictureUrl: pictureUrl,
         displayName: displayName,
         userId: userId,
         statusMessage: statusMessage,
         lastMessageTime: new Date().getTime()
-      }, this.redisClient);
+      });
     } else {
-      addUserByRestApi({
+      addUserByRestApi(this.redisClient, {
         pictureUrl: sources[this.userId].pictureUrl,
         displayName: sources[this.userId].name,
         userId: sources[this.userId].userId,
         statusMessage: sources[this.userId].statusMessage,
         lastMessageTime: new Date().getTime()
-      }, this.redisClient);
+      });
     }
     Object.assign(sources, newSources);
     if (Object.keys(newSources).length > 0) await setSources(sources);

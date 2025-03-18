@@ -167,7 +167,7 @@
             <table id="stop-user-table">
                 <thead>
                     <tr>
-                        <th>代號</th>
+                        <th><input type="checkbox" id="ckbAll2" onclick="selectedStopUsers()" />代號</th>
                         <th>功能</th>
                     </tr>
                 </thead>
@@ -349,6 +349,18 @@
             input.value = '';
             await refreshUsersTables();
             await refreshStopUserTables();
+        }
+
+        function selectedStopUsers(){
+            const select = document.getElementById("ckbAll2").checked;
+
+            const ckbs = document.getElementsByClassName("stopUser-key");
+            if (ckbs.length == 0) { return; }
+
+            var ids = [];
+            for(var i=0; i < ckbs.length; i++){
+                ckbs[i].checked = select;
+            }
         }
 
         function timeToYYYYMMDD(timestamp) {

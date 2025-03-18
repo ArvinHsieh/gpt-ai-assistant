@@ -19,13 +19,24 @@ const removeUserByRestApi = async (redisClient, userId) => {
   return await redisClient.hdel(`${REDIS_HASHKEY}:users`, userId);
 };
 
+const checkIncludeStopBotByRestApi = async (redisClient, userId) => {
+  const exist = await redisClient.hexists(`${REDIS_HASHKEY}:stop_bot_users`, userId);
+  if (exist) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 /**
  * @returns {[{key, value}]>}
  */
 const getStopBotUsersIdByRestApi = async (redisClient) => {
   const stop_bot_users = await redisClient.hgetall(`${REDIS_HASHKEY}:stop_bot_users`) || {};
   if (stop_bot_users) {
-    return Object.entries(stop_bot_users).map(([key, value]) => ({key,value}));
+    let d = Object.entries(stop_bot_users).map(([key, value]) => ({key,value}));
+    d.sort((a, b) => b.value - a.value);
+    return d;
   } else {
     return [];
   }
@@ -52,5 +63,6 @@ export {
   removeUserByRestApi,
   getStopBotUsersIdByRestApi,
   addStopBotUserByRestApi,
-  removeStopUserByRestApi
+  removeStopUserByRestApi,
+  checkIncludeStopBotByRestApi
 };
